@@ -4,6 +4,7 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument("--query", help="Query")
 parser.add_argument("--book", help="Book")
+parser.add_argument("--basic", help="Don't use book", action="store_true")
 
 args=parser.parse_args()
 
@@ -70,18 +71,19 @@ def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame) 
     chosen_sections_len = 0
     chosen_sections_indexes = []
 
-    for _, section_index in most_relevant_document_sections:
-        document_section = df.loc[df['title'] == section_index].iloc[0]
+    if not args.basic:
+        for _, section_index in most_relevant_document_sections:
+            document_section = df.loc[df['title'] == section_index].iloc[0]
 
-        chosen_sections_len += document_section.tokens + separator_len
-        if chosen_sections_len > MAX_SECTION_LEN:
-            space_left = MAX_SECTION_LEN - chosen_sections_len - len(SEPARATOR)
-            chosen_sections.append(SEPARATOR + document_section.content[:space_left])
+            chosen_sections_len += document_section.tokens + separator_len
+            if chosen_sections_len > MAX_SECTION_LEN:
+                space_left = MAX_SECTION_LEN - chosen_sections_len - len(SEPARATOR)
+                chosen_sections.append(SEPARATOR + document_section.content[:space_left])
+                chosen_sections_indexes.append(str(section_index))
+                break
+
+            chosen_sections.append(SEPARATOR + document_section.content)
             chosen_sections_indexes.append(str(section_index))
-            break
-
-        chosen_sections.append(SEPARATOR + document_section.content)
-        chosen_sections_indexes.append(str(section_index))
 
     return (HEADER + "".join(chosen_sections) + QUESTION_1 + QUESTION_2 + QUESTION_3 + QUESTION_4 + QUESTION_5 + QUESTION_6 + QUESTION_7 + QUESTION_8 + QUESTION_9 + QUESTION_10 + "\n\n\nQ: " + question + "\n\nA: "), ("".join(chosen_sections))
 
