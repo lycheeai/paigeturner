@@ -80,5 +80,5 @@ document_similarties = order_document_sections_by_query_similarity(
   document_embeddings
 )
 
-for (sim, page) in document_similarties:
+for (sim, page) in document_similarties[0:20]:
   print(f"{page}      {sim}")
