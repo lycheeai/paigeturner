@@ -1,4 +1,9 @@
 
+This is largely copy pasted from:
+https://github.com/slavingia/askmybook
+
+
+
 ## Setup
 
 ```bash
