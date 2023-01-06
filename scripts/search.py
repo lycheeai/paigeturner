@@ -45,7 +45,6 @@ def order_document_sections_by_query_similarity(query: str, contexts: dict[(str,
     Return the list of document sections, sorted by relevance in descending order.
     """
     query_embedding = get_query_embedding(query)
-    print(len(query_embedding))
 
     document_similarities = sorted([
         (vector_similarity(query_embedding, doc_embedding), doc_index) for doc_index, doc_embedding in contexts.items()
@@ -58,7 +57,6 @@ def vector_similarity(x: list[float], y: list[float]) -> float:
     We could use cosine similarity or dot product to calculate the similarity between vectors.
     In practice, we have found it makes little difference.
     """
-    print(len(x), len(y))
     # return np.dot(np.array(x), np.array(y))
     return np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
 
@@ -76,8 +74,6 @@ def load_embeddings(fname: str) -> dict[tuple[str, str], list[float]]:
     }
 
 document_embeddings = load_embeddings(f'{args.book}.embeddings.csv')
-
-print(len(document_embeddings.keys()))
 
 document_similarties = order_document_sections_by_query_similarity(
   args.query,
